@@ -7195,7 +7195,9 @@
                 imgWrapper.addEventListener("click", (() => {
                     openPopup(popupId);
                     const previewHolder = zoomPopup.querySelector(".zoom-popup__preview-holder");
+                    const previewSource = previewHolder.querySelector(`source`);
                     const previewImg = previewHolder.querySelector(`img`);
+                    previewSource.setAttribute("srcset", img.getAttribute("src"));
                     previewImg.setAttribute("src", img.getAttribute("src"));
                     let zoom = 1;
                     let previewImgTop = 0, previewImgLeft = 0, previewImgWidth = 0, previewImgHeight = 0;
