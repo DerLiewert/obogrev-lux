@@ -9291,7 +9291,6 @@
                             cardSliders.forEach((cardSlider => cardObserver.observe(cardSlider)));
                             function cardsHandleIntersect(entries) {
                                 entries.forEach((entry => {
-                                    console.log(entry.isIntersecting);
                                     if (entry.isIntersecting) {
                                         new Swiper(entry.target, {
                                             modules: [ EffectFade, Pagination ],
@@ -10460,7 +10459,11 @@
                 }));
             }));
         }
-        youtubeVideos();
+        window.addEventListener("load", (function() {
+            setTimeout((() => {
+                youtubeVideos();
+            }), 500);
+        }));
         window["FLS"] = true;
     })();
 })();
