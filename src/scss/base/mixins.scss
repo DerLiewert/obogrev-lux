@@ -1,0 +1,33 @@
+//Підключення шрифту
+@mixin font($font_name, $file_name, $weight, $style) {
+  @font-face {
+    font-family: $font_name;
+    font-display: swap;
+    src:
+      url('../fonts/#{$file_name}.woff2') format('woff2'),
+      url('../fonts/#{$file_name}.woff') format('woff');
+    font-weight: #{$weight};
+    font-style: #{$style};
+  }
+}
+
+// max-width and min-width media
+@mixin media-max($screenWidth) {
+  $max: $screenWidth - 0.02px;
+  @media (max-width: $max) {
+    @content;
+  }
+}
+
+@mixin media-min($screenWidth) {
+  @media (min-width: $screenWidth) {
+    @content;
+  }
+}
+
+@mixin media-between($screenWidthMin, $screenWidthMax) {
+  $max: $screenWidthMax - 0.02;
+  @media (min-width: $screenWidthMin) and (max-width: $max) {
+    @content;
+  }
+}

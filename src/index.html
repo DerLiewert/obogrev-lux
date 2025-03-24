@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Вёрстка «NEW_PROJECT_NAME»</title>
+  </head>
+  <body>
+    <div class="wrapper">
+      <div class="rootpage">
+        <h1>Верстка «NEW_PROJECT_NAME»</h1>
+        <h2>Cтраницы:</h2>
+        <ul class="rootpage__list">
+          <li><a target="_blank" href="home.html">Главная</a></li>
+          <li><a target="_blank" href="category.html">Категории</a></li>
+          <li><a target="_blank" href="product.html">Страница товара</a></li>
+        </ul>
+      </div>
+    </div>
+  </body>
+  <style>
+    @charset "UTF-8";
+    @import url('https://fonts.googleapis.com/css?family=Montserrat:regular,700&display=swap');
+    *,
+    *::before,
+    *::after {
+      padding: 0px;
+      margin: 0px;
+      border: 0px;
+      box-sizing: border-box;
+    }
+    html,
+    body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      min-width: 320px;
+      width: 100%;
+      color: #000;
+      background-color: #fff;
+    }
+    body {
+      font-family: Montserrat;
+      font-size: 100%;
+      line-height: 1;
+      font-size: 1.25rem;
+    }
+
+    @media (max-width: 992px) {
+      body {
+        font-size: 1.15rem;
+      }
+    }
+    @media (max-width: 767px) {
+      body {
+        font-size: 1rem;
+      }
+    }
+    a {
+      text-decoration: none;
+      color: #f47922;
+    }
+    a:visited {
+      color: #f47922;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+    ul li {
+      list-style: none;
+    }
+    img {
+      vertical-align: top;
+    }
+    .wrapper {
+      width: 100%;
+      min-height: 100%;
+      overflow: hidden;
+      display: flex;
+    }
+    .rootpage {
+      min-height: 100%;
+      width: 100%;
+      padding: 30px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+    @media (max-width: 767px) {
+      .rootpage {
+        padding: 30px 15px;
+      }
+    }
+    h1 {
+      color: #4c3376;
+      font-size: 3rem;
+      margin: 0px 0px 1.5rem 0px;
+    }
+    @media (max-width: 992px) {
+      h1 {
+        font-size: 2.5rem;
+      }
+    }
+    @media (max-width: 767px) {
+      h1 {
+        font-size: 1.85rem;
+        margin: 0px 0px 1.25rem 0px;
+      }
+    }
+    h2 {
+      color: #4c3376;
+      font-size: 1.75rem;
+      margin: 0px 0px 1rem 0px;
+    }
+    @media (max-width: 992px) {
+      h2 {
+        font-size: 1.5rem;
+      }
+    }
+    @media (max-width: 767px) {
+      h2 {
+        font-size: 1.125rem;
+      }
+    }
+    .rootpage__list li:not(:last-child) {
+      margin: 0px 0px 15px 0px;
+    }
+    @media (max-width: 992px) {
+      .rootpage__list li:not(:last-child) {
+        margin: 0px 0px 12px 0px;
+      }
+    }
+  </style>
+</html>

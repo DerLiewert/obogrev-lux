@@ -1,0 +1,132 @@
+.menu {
+  &__title {
+    font-size: 20px;
+    font-weight: 700;
+    line-height: 1.5;
+    color: var(--main);
+  }
+
+  &._init-spollers &__title {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    &::after {
+      content: '';
+      width: 9px;
+      height: 13px;
+      background: url('@img/icons/arrow-black.svg') center no-repeat;
+      background-size: contain;
+      transform: rotate(90deg);
+      margin-left: 15px;
+      transition: transform 0.3s ease 0s;
+    }
+    &._spoller-open {
+      &::after {
+        transform: rotate(-90deg);
+      }
+    }
+  }
+
+  &__list {
+    margin-top: 12px;
+  }
+
+  &__list-item {
+    & + & {
+      margin-top: 11px;
+    }
+  }
+
+  &__link {
+    font-weight: 500;
+    line-height: 1.3;
+    color: var(--main);
+    opacity: 0.7;
+    position: relative;
+
+    @media (any-hover: hover) {
+      transition:
+        color 0.3s ease 0s,
+        opacity 0.3s ease 0s;
+      &::after {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        width: 0%;
+        height: 1px;
+        background-color: var(--accent-2-light);
+        transition: width 0.3s ease 0s;
+      }
+      &:hover {
+        color: var(--accent-2-light);
+        opacity: 1;
+        &::after {
+          width: 100%;
+        }
+      }
+    }
+  }
+
+  &__socials {
+    margin-top: 12px;
+  }
+}
+
+//Burger Icon
+.burger-icon {
+  @include media-max($tablet) {
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #f5f5f7;
+    position: relative;
+
+    &::before,
+    &::after {
+      content: '';
+      transition: transform 0.3s ease 0s;
+    }
+
+    &::before,
+    &::after,
+    span {
+      width: 50%;
+      height: 2px;
+      background-color: var(--accent-1);
+      position: absolute;
+      left: 50%;
+      top: 50%;
+    }
+    &::before {
+      transform: translate(-50%, calc(-50% + -5px));
+    }
+    &::after {
+      transform: translate(-50%, calc(-50% + 5px));
+    }
+    span {
+      transform: translate(-50%, -50%);
+      transition:
+        transform 0.3s ease 0s,
+        opacity 0.3s ease 0s;
+    }
+
+    .menu-open & {
+      &::before {
+        transform: translate(-50%, -50%) rotate(-45deg);
+      }
+      &::after {
+        transform: translate(-50%, -50%) rotate(45deg);
+      }
+      span {
+        opacity: 0;
+      }
+    }
+  }
+  @include media-max($mobileSmall) {
+    width: 36px;
+    height: 36px;
+  }
+}

@@ -1,0 +1,153 @@
+//====================================================================================================
+.footer {
+  //margin-top: 60px;
+  background-color: #fff;
+  box-shadow: 0px -5px 50px 0px rgba(0, 0, 0, 0.1);
+
+  &__top {
+    padding: 35px 0 30px;
+    border-bottom: 1px dashed #cecece;
+    @include media-min($tablet) {
+      display: flex;
+      justify-content: space-between;
+      padding: 44px 0;
+    }
+  }
+
+  &__logo {
+    display: inline-block;
+
+    @include media-max($tablet) {
+      margin-bottom: 25px;
+    }
+    @include media-min($tablet) {
+      flex: 0 1 22%;
+      margin-right: 30px;
+    }
+
+    img {
+      height: 36px;
+      @include media-min($mobile) {
+        height: 42px;
+      }
+      @include media-min(1100px) {
+        height: 50px;
+      }
+    }
+  }
+
+  &__contacts {
+    @include media-min($mobileSmall) {
+      display: flex;
+      align-items: flex-end;
+      flex-wrap: wrap;
+      margin: -7px containerPadding(1);
+    }
+    @include media-min($tablet) {
+      align-self: center;
+      flex: 0 0 76.8%;
+    }
+  }
+
+  &__contacts-item {
+    @include media-max($mobileSmall) {
+      & + & {
+        margin-top: 12px;
+      }
+    }
+    @include media-min($mobileSmall) {
+      flex: 1 0 49%;
+      padding: 7px containerPadding();
+    }
+    @include media-min($mobile) {
+      flex: 1 0 24%;
+    }
+  }
+
+  &__content {
+    padding: 25px 0;
+    border-bottom: 1px dashed #cecece;
+
+    @include media-min($mobileSmall) {
+      padding-bottom: 30px;
+    }
+    @include media-min($mobile) {
+      padding: 26px 0 40px;
+    }
+  }
+
+  &__menu {
+    margin: 0 -15px 27px;
+
+    @include media-min(480px) {
+      display: flex;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+    }
+
+    & .menu {
+      &__nav {
+        padding: 0 15px;
+        &:not(:last-child) {
+          margin-bottom: 20px;
+          @include media-min(480px) {
+            margin-bottom: 25px;
+          }
+          @include media-min($tablet) {
+            margin-bottom: 30px;
+          }
+        }
+
+        @include media-min(480px) {
+          flex: 1 1 49%;
+        }
+        @include media-min($tablet) {
+          flex-basis: 23.8%;
+        }
+      }
+    }
+  }
+
+  &__info {
+    line-height: 1.5;
+    color: var(--main);
+    opacity: 0.5;
+  }
+
+  &__copy {
+    margin-bottom: 8px;
+  }
+
+  &__text {
+  }
+
+  &__policy {
+    font-size: 12px;
+    line-height: 1.5;
+    color: var(--main);
+    padding: 20px 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 7px 30px;
+
+    @include media-min($mobile) {
+      padding: 27px 0;
+    }
+    @include media-min($tablet) {
+      padding: 33px 0;
+    }
+  }
+
+  &__policy-link {
+    opacity: 0.3;
+    @media (any-hover: hover) {
+      transition: opacity 0.3s ease 0s;
+      &:hover {
+        opacity: 1;
+      }
+    }
+  }
+}
+
+//====================================================================================================
