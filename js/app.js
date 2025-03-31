@@ -9487,27 +9487,8 @@
         window.addEventListener("load", (function(event) {
             initSliders();
         }));
-        let isMobile = {
-            Android: function() {
-                return navigator.userAgent.match(/Android/i);
-            },
-            BlackBerry: function() {
-                return navigator.userAgent.match(/BlackBerry/i);
-            },
-            iOS: function() {
-                return navigator.userAgent.match(/iPhone|iPad|iPod/i);
-            },
-            Opera: function() {
-                return navigator.userAgent.match(/Opera Mini/i);
-            },
-            Windows: function() {
-                return navigator.userAgent.match(/IEMobile/i);
-            },
-            any: function() {
-                return isMobile.Android() || isMobile.BlackBerry() || isMobile.iOS() || isMobile.Opera() || isMobile.Windows();
-            }
-        };
         var dist = __webpack_require__(517);
+        const isTouchDevice = "ontouchstart" in window || navigator.maxTouchPoints > 0;
         const matchMediaMax992 = window.matchMedia(`(max-width: 991.98px)`);
         let script_bodyLockStatus = false;
         let script_bodyUnlock = (delay = 0) => {
@@ -9791,15 +9772,17 @@
             if (btnClose || !popupContent) closePopup(popup);
         }));
         function openPopup(id) {
-            const popup = document.querySelector(id);
-            popup.classList.add("_show-popup");
             script_bodyLock();
-            document.dispatchEvent(new Event("popup-open"));
+            setTimeout((() => {
+                const popup = document.querySelector(id);
+                popup.classList.add("_show-popup");
+                document.dispatchEvent(new Event("popup-open"));
+            }), 0);
         }
         function closePopup(popup) {
             popup.classList.remove("_show-popup");
-            script_bodyUnlock();
             popup.dispatchEvent(new Event("popup-close"));
+            script_bodyUnlock();
         }
         function spollers() {
             const spollerBlocks = document.querySelectorAll("[data-spollers]");
@@ -10173,10 +10156,83 @@
         zoomBlocks.forEach((zoomBlock => {
             zoomBlock.querySelectorAll("[data-zoom-image]").forEach((imgWrapper => {
                 const img = imgWrapper.querySelector("img");
-                if (isMobile.any()) {
+                if (!isTouchDevice) {
+                    let imgRect, imgWrapperRect;
+                    let previewImg, previewSource, previewHolder, previewHolderRect;
+                    let square, squareParam;
+                    const zoom = 1.5;
+                    let zoomCoeff;
+                    let newSquareTop = 0, newSquareLeft = 0;
+                    previewHolder = document.querySelector("[data-zoom-previewholder]");
+                    previewImg = previewHolder.querySelector("img");
+                    function onMouseEnter() {
+                        square?.remove();
+                        imgRect = img.getBoundingClientRect();
+                        imgWrapperRect = imgWrapper.getBoundingClientRect();
+                        previewHolderRect = previewHolder.getBoundingClientRect();
+                        let widthRatio = previewHolderRect.width / imgRect.width;
+                        let heightRatio = previewHolderRect.height / imgRect.height;
+                        zoomCoeff = widthRatio > heightRatio ? widthRatio * zoom : heightRatio * zoom;
+                        squareParam = {
+                            height: previewHolderRect.height / zoomCoeff,
+                            width: previewHolderRect.width / zoomCoeff,
+                            top: imgRect.top - imgWrapperRect.top,
+                            left: imgRect.left - imgWrapperRect.left
+                        };
+                        square = createSquare(squareParam);
+                        setElementPosition(square, squareParam.top, squareParam.left);
+                        imgWrapper.insertAdjacentElement("beforeend", square);
+                        previewImg.setAttribute("src", img.getAttribute("src"));
+                        previewSource = previewHolder.querySelector(`source`);
+                        if (previewSource) previewSource.setAttribute("srcset", img.getAttribute("src"));
+                        previewImg.style.width = imgRect.width * zoomCoeff + "px";
+                        previewImg.style.height = imgRect.height * zoomCoeff + "px";
+                        previewHolder.classList.add("_visible");
+                    }
+                    function onMouseMove(e) {
+                        if (e.clientY - imgRect.top < squareParam.height / 2) newSquareTop = imgRect.top - imgWrapperRect.top; else if (imgRect.top + imgRect.height - e.clientY < squareParam.height / 2) newSquareTop = imgRect.top - imgWrapperRect.top + imgRect.height - Math.floor(squareParam.height); else newSquareTop = imgRect.top - imgWrapperRect.top + (e.clientY - imgRect.top) - squareParam.height / 2;
+                        if (e.clientX - imgRect.left < squareParam.width / 2) newSquareLeft = imgRect.left - imgWrapperRect.left; else if (imgRect.width + imgRect.left - e.clientX < squareParam.width / 2) newSquareLeft = imgRect.left - imgWrapperRect.left + imgRect.width - Math.floor(squareParam.width); else newSquareLeft = imgRect.left - imgWrapperRect.left + (e.clientX - imgRect.left) - squareParam.width / 2;
+                        setElementPosition(square, newSquareTop, newSquareLeft);
+                        previewImg.style.left = (squareParam.left - newSquareLeft) * zoomCoeff + "px";
+                        previewImg.style.top = (squareParam.top - newSquareTop) * zoomCoeff + "px";
+                    }
+                    function onMouseLeave() {
+                        square?.remove();
+                        if (previewSource) previewSource.removeAttribute("srcset");
+                        previewImg.removeAttribute("src");
+                        previewImg.style.width = "0px";
+                        previewImg.style.height = "0px";
+                        previewHolder.classList.remove("_visible");
+                    }
+                    function createSquare(parameters) {
+                        const square = document.createElement("div");
+                        square.style.top = parameters.top + "px";
+                        square.style.left = parameters.left + "px";
+                        square.style.width = parameters.width + "px";
+                        square.style.height = parameters.height + "px";
+                        square.classList.add("zoom-square");
+                        return square;
+                    }
+                    matchMediaMax992.addEventListener("change", onChangeMedia);
+                    onChangeMedia(matchMediaMax992);
+                    function onChangeMedia(e) {
+                        if (e.matches) {
+                            img.removeEventListener("mouseenter", onMouseEnter);
+                            img.removeEventListener("mousemove", onMouseMove);
+                            img.removeEventListener("mouseleave", onMouseLeave);
+                            onMouseLeave();
+                        } else {
+                            img.addEventListener("mouseenter", onMouseEnter);
+                            img.addEventListener("mousemove", onMouseMove);
+                            img.addEventListener("mouseleave", onMouseLeave);
+                        }
+                    }
+                }
+                function zoomInPopup() {
                     const popupId = "#zoom-popup";
                     const zoomPopup = document.querySelector(popupId);
                     imgWrapper.addEventListener("click", (() => {
+                        const img = imgWrapper.querySelector("img");
                         openPopup(popupId);
                         const previewHolder = zoomPopup.querySelector(".zoom-popup__preview-holder");
                         const previewSource = previewHolder.querySelector(`source`);
@@ -10258,16 +10314,20 @@
                             endX: 0,
                             endY: 0
                         };
-                        previewImg.addEventListener("touchstart", onTouchStart);
+                        previewImg.addEventListener(isTouchDevice ? "touchstart" : "mousedown", onTouchStart);
                         function onTouchStart(e) {
-                            touchCoords.startX = e.changedTouches[0].clientX - previewImgLeft;
-                            touchCoords.startY = e.changedTouches[0].clientY - previewImgTop;
+                            e.preventDefault();
+                            const clientX = isTouchDevice ? e.touches[0].clientX : e.clientX;
+                            const clientY = isTouchDevice ? e.touches[0].clientY : e.clientY;
+                            touchCoords.startX = clientX - previewImgLeft;
+                            touchCoords.startY = clientY - previewImgTop;
+                            previewImg.addEventListener(isTouchDevice ? "touchmove" : "mousemove", onTouchMove);
                         }
-                        previewImg.addEventListener("touchmove", onTouchMove);
+                        previewImg.addEventListener(isTouchDevice ? "touchend" : "mouseup", onTouchEnd);
                         function onTouchMove(e) {
                             e.preventDefault();
-                            touchCoords.endX = e.changedTouches[0].clientX;
-                            touchCoords.endY = e.changedTouches[0].clientY;
+                            touchCoords.endX = isTouchDevice ? e.touches[0].clientX : e.clientX;
+                            touchCoords.endY = isTouchDevice ? e.touches[0].clientY : e.clientY;
                             previewImgLeft = touchCoords.endX - touchCoords.startX;
                             previewImgTop = touchCoords.endY - touchCoords.startY;
                             previewHolderRect = previewHolder.getBoundingClientRect();
@@ -10275,8 +10335,12 @@
                             if (previewImgTop > 0 && previewImgHeight > previewHolderRect.height || previewImgTop < 0 && previewImgHeight <= previewHolderRect.height) previewImgTop = 0; else if (previewImgHeight <= previewHolderRect.height && previewImgTop > previewHolderRect.height - previewImgHeight || previewImgHeight > previewHolderRect.height && previewImgTop < previewHolderRect.height - previewImgHeight) previewImgTop = previewHolderRect.height - previewImgHeight;
                             setElementPosition(previewImg, previewImgTop, previewImgLeft);
                         }
+                        function onTouchEnd(e) {
+                            previewImg.removeEventListener(isTouchDevice ? "touchmove" : "mousemove", onTouchMove);
+                        }
                         zoomPopup.addEventListener("popup-close", onPopupClose);
                         function onPopupClose() {
+                            previewHolderResize.unobserve(previewHolder);
                             setElementPosition(previewImg, 0, 0);
                             previewImg.removeAttribute("style");
                             previewHolder.classList.remove("_visible");
@@ -10284,10 +10348,9 @@
                             if (previewSource) previewSource.removeAttribute("src");
                             zoomPlus.removeEventListener("click", onZoomPlus);
                             zoomMinus.removeEventListener("click", onZoomMinus);
-                            previewImg.removeEventListener("touchstart", onTouchStart);
-                            previewImg.removeEventListener("touchmove", onTouchMove);
+                            previewImg.removeEventListener(isTouchDevice ? "touchstart" : "mousedown", onTouchStart);
+                            previewImg.removeEventListener(isTouchDevice ? "touchmove" : "mousemove", onTouchMove);
                             zoomPopup.removeEventListener("popup-close", onPopupClose);
-                            previewHolderResize.unobserve(previewHolder);
                         }
                         let prevHolderWidth = previewHolderRect.width;
                         let prevHolderHeight = previewHolderRect.height;
@@ -10317,65 +10380,12 @@
                             prevHolderHeight = previewHolderRect.height;
                             setElementPosition(previewImg, previewImgTop, previewImgLeft);
                         }));
-                        previewHolderResize.observe(previewHolder);
+                        setTimeout((() => {
+                            previewHolderResize.observe(previewHolder);
+                        }), 0);
                     }));
-                } else {
-                    let imgRect, imgWrapperRect;
-                    let previewImg, previewSource, previewHolder, previewHolderRect;
-                    let square, squareParam;
-                    const zoom = 1.5;
-                    let zoomCoeff;
-                    previewHolder = document.querySelector("[data-zoom-previewholder]");
-                    previewImg = previewHolder.querySelector("img");
-                    img.addEventListener("mouseenter", (() => {
-                        imgRect = img.getBoundingClientRect();
-                        imgWrapperRect = imgWrapper.getBoundingClientRect();
-                        previewHolderRect = previewHolder.getBoundingClientRect();
-                        let widthRatio = previewHolderRect.width / imgRect.width;
-                        let heightRatio = previewHolderRect.height / imgRect.height;
-                        zoomCoeff = widthRatio > heightRatio ? widthRatio * zoom : heightRatio * zoom;
-                        squareParam = {
-                            height: previewHolderRect.height / zoomCoeff,
-                            width: previewHolderRect.width / zoomCoeff,
-                            top: imgRect.top - imgWrapperRect.top,
-                            left: imgRect.left - imgWrapperRect.left
-                        };
-                        square = createSquare(squareParam);
-                        setElementPosition(square, squareParam.top, squareParam.left);
-                        imgWrapper.insertAdjacentElement("beforeend", square);
-                        previewImg.setAttribute("src", img.getAttribute("src"));
-                        previewSource = previewHolder.querySelector(`source`);
-                        if (previewSource) previewSource.setAttribute("srcset", img.getAttribute("src"));
-                        previewImg.style.width = imgRect.width * zoomCoeff + "px";
-                        previewImg.style.height = imgRect.height * zoomCoeff + "px";
-                        previewHolder.classList.add("_visible");
-                    }));
-                    let newSquareTop = 0, newSquareLeft = 0;
-                    img.addEventListener("mousemove", (e => {
-                        if (e.clientY - imgRect.top < squareParam.height / 2) newSquareTop = imgRect.top - imgWrapperRect.top; else if (imgRect.top + imgRect.height - e.clientY < squareParam.height / 2) newSquareTop = imgRect.top - imgWrapperRect.top + imgRect.height - Math.floor(squareParam.height); else newSquareTop = imgRect.top - imgWrapperRect.top + (e.clientY - imgRect.top) - squareParam.height / 2;
-                        if (e.clientX - imgRect.left < squareParam.width / 2) newSquareLeft = imgRect.left - imgWrapperRect.left; else if (imgRect.width + imgRect.left - e.clientX < squareParam.width / 2) newSquareLeft = imgRect.left - imgWrapperRect.left + imgRect.width - Math.floor(squareParam.width); else newSquareLeft = imgRect.left - imgWrapperRect.left + (e.clientX - imgRect.left) - squareParam.width / 2;
-                        setElementPosition(square, newSquareTop, newSquareLeft);
-                        previewImg.style.left = (squareParam.left - newSquareLeft) * zoomCoeff + "px";
-                        previewImg.style.top = (squareParam.top - newSquareTop) * zoomCoeff + "px";
-                    }));
-                    img.addEventListener("mouseleave", (() => {
-                        square.remove();
-                        if (previewSource) previewSource.removeAttribute("srcset");
-                        previewImg.removeAttribute("src");
-                        previewImg.style.width = "0px";
-                        previewImg.style.height = "0px";
-                        previewHolder.classList.remove("_visible");
-                    }));
-                    function createSquare(parameters) {
-                        const square = document.createElement("div");
-                        square.style.top = parameters.top + "px";
-                        square.style.left = parameters.left + "px";
-                        square.style.width = parameters.width + "px";
-                        square.style.height = parameters.height + "px";
-                        square.classList.add("zoom-square");
-                        return square;
-                    }
                 }
+                zoomInPopup();
             }));
             function setElementPosition(target, top = 0, left = 0) {
                 target.style.top = top + "px";
