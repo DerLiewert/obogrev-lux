@@ -311,6 +311,8 @@ h6 {
   position: absolute;
   top: 0;
   left: 0;
+  cursor: -webkit-grab;
+  cursor: grab;
   height: auto;
   width: auto
 }
@@ -3788,7 +3790,7 @@ html:not(.touch) .btn:not(.tag).btn:hover.btn--bg.btn--shadow {
   height: 100%;
   position: absolute;
   top: 0;
-  left: 105%;
+  left: calc(100% + 15px);
   z-index: 1;
   border: 2px solid var(--accent-2);
   background-color: #fff;
@@ -3891,10 +3893,10 @@ html:not(.touch) .btn:not(.tag).btn:hover.btn--bg.btn--shadow {
   border: 1px solid var(--gray);
   background-color: #fff
 }
-.product__slide {
+.product__slide,
+.product__slide picture {
   width: 100%;
   height: 100%;
-  position: relative;
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -3903,7 +3905,10 @@ html:not(.touch) .btn:not(.tag).btn:hover.btn--bg.btn--shadow {
   align-items: center;
   -webkit-box-pack: center;
   -ms-flex-pack: center;
-  justify-content: center;
+  justify-content: center
+}
+.product__slide {
+  position: relative;
   overflow: hidden
 }
 .product__slide img {
